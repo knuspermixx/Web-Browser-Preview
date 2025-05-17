@@ -24,7 +24,7 @@ class WebBrowserViewProvider {
   _disposables = [];
 
   _webviewState = {
-    url: "https://code.visualstudio.com",
+    url: " http://localhost:xyz",
     zoom: 100,
     activeBreakpoint: "responsive",
     selectedMobileDeviceId: "",
