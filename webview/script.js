@@ -7,6 +7,18 @@
 
   const getElement = (id) => document.getElementById(id);
 
+  // Custom device presets
+  const CUSTOM_DEVICE = {
+    name: "Custom",
+    type: "custom",
+    id: "custom",
+    portrait: { width: 360, height: 640 },
+    landscape: { width: 640, height: 360 },
+  };
+  
+  // Desktop-Referenzbreite für responsive Modus
+  const DESKTOP_REFERENCE_WIDTH = 1280;
+
   const DEVICE_PRESETS = [
     {
       name: "iPhone SE (3rd gen)",
@@ -106,6 +118,8 @@
     state.selectedTabletDeviceId ??
     settingsElement.dataset.selectedTabletDeviceId ??
     DEFAULT_TABLET_ID;
+  let customDeviceWidth = state.customDeviceWidth ?? 360;
+  let customDeviceHeight = state.customDeviceHeight ?? 640;
   let currentOrientation =
     state.orientation ?? settingsElement.dataset.orientation ?? "portrait";
   let userHasManuallyZoomedResponsive =
@@ -134,6 +148,9 @@
     deviceMobileButton: getElement("deviceMobile"),
     deviceTabletButton: getElement("deviceTablet"),
     specificDeviceSelect: getElement("specificDeviceSelect"),
+    customDeviceContainer: getElement("customDeviceContainer"),
+    customDeviceWidthInput: getElement("customDeviceWidth"),
+    customDeviceHeightInput: getElement("customDeviceHeight"),
   };
 
   function populateSpecificDeviceDropdown(deviceType) {
@@ -146,13 +163,21 @@
       return;
     }
 
+    // Hinzufügen der vordefinierten Geräte (nur Name, keine Größe)
     devicesToShow.forEach((device) => {
       const option = document.createElement("option");
       option.value = device.id;
-      option.textContent = `${device.name} (${device.portrait.width}×${device.portrait.height})`;
+      option.textContent = device.name;
       elements.specificDeviceSelect.appendChild(option);
     });
 
+    // Hinzufügen der benutzerdefinierten Option (nur Name)
+    const customOption = document.createElement("option");
+    customOption.value = "custom";
+    customOption.textContent = `Custom`;
+    elements.specificDeviceSelect.appendChild(customOption);
+
+    // Die richtige Option auswählen
     if (deviceType === "mobile") {
       elements.specificDeviceSelect.value =
         selectedMobileDeviceId || devicesToShow[0]?.id || "";
@@ -160,7 +185,16 @@
       elements.specificDeviceSelect.value =
         selectedTabletDeviceId || devicesToShow[0]?.id || "";
     }
+    
+    // Das Dropdown anzeigen
     elements.specificDeviceSelect.style.display = "inline-block";
+    
+    // Benutzerdefinierte Eingabefelder ein-/ausblenden
+    if (elements.customDeviceContainer) {
+      elements.customDeviceContainer.style.display = 
+        (deviceType === "mobile" || deviceType === "tablet") && 
+        elements.specificDeviceSelect.value === "custom" ? "flex" : "none";
+    }
   }
 
   function setActiveBreakpointButton(breakpoint) {
@@ -202,18 +236,41 @@
       elements.specificDeviceSelect.style.display = "none";
       elements.resizeInfo.style.display = "inline";
       currentDevice = { type: "responsive", name: "Responsive" };
-      activeZoom = 50;
+      
+      // Berechne einen Zoom-Wert, der eine Desktop-ähnliche Breite simuliert
+      if (!userHasManuallyZoomedResponsive) {
+        // Berechne Zoom basierend auf aktuellem Panel und der Desktop-Referenzbreite
+        const panelWidth = elements.iframeHost.offsetWidth;
+        if (panelWidth > 0) {
+          // Zoom-Wert berechnen, um Desktop-Breite zu simulieren
+          activeZoom = Math.round((panelWidth / DESKTOP_REFERENCE_WIDTH) * 100);
+          // Zoom auf sinnvolle Grenzen beschränken (25% - 100%)
+          activeZoom = Math.max(25, Math.min(100, activeZoom));
+        } else {
+          // Fallback, falls die Breite noch nicht verfügbar ist
+          activeZoom = 50;
+        }
+      }
       userHasManuallyZoomedResponsive = false;
     }
 
     if (activeBreakpoint === "mobile" || activeBreakpoint === "tablet") {
-      currentDevice = DEVICE_PRESETS.find((d) => d.id === deviceIdToUse);
-      if (!currentDevice) {
-        currentDevice = DEVICE_PRESETS.find((d) => d.type === activeBreakpoint);
-        if (activeBreakpoint === "mobile")
-          selectedMobileDeviceId = currentDevice?.id || "";
-        if (activeBreakpoint === "tablet")
-          selectedTabletDeviceId = currentDevice?.id || "";
+      if (deviceIdToUse === "custom") {
+        // Wenn ein benutzerdefiniertes Gerät ausgewählt ist, verwenden wir CUSTOM_DEVICE
+        // und aktualisieren die Abmessungen
+        currentDevice = { ...CUSTOM_DEVICE };
+        currentDevice.portrait = { width: customDeviceWidth, height: customDeviceHeight };
+        currentDevice.landscape = { width: customDeviceHeight, height: customDeviceWidth };
+      } else {
+        // Ansonsten suchen wir nach dem vordefinierten Gerät
+        currentDevice = DEVICE_PRESETS.find((d) => d.id === deviceIdToUse);
+        if (!currentDevice) {
+          currentDevice = DEVICE_PRESETS.find((d) => d.type === activeBreakpoint);
+          if (activeBreakpoint === "mobile")
+            selectedMobileDeviceId = currentDevice?.id || "";
+          if (activeBreakpoint === "tablet")
+            selectedTabletDeviceId = currentDevice?.id || "";
+        }
       }
     }
 
@@ -342,7 +399,12 @@
   }
 
   function setZoomInternal(zoomPercent, isInternalCall = false) {
-    const newZoom = Math.max(10, Math.min(300, Math.round(zoomPercent)));
+    // Zoom nur in 10er-Schritten erlauben
+    const minZoom = 10;
+    const maxZoom = 300;
+    let newZoom = Math.max(minZoom, Math.min(maxZoom, Math.round(zoomPercent)));
+    // Immer auf Vielfaches von 10 runden
+    newZoom = Math.round(newZoom / 10) * 10;
     const zoomChanged = activeZoom !== newZoom;
     activeZoom = newZoom;
     elements.zoomLevelDisplay.innerText = `${activeZoom}%`;
@@ -378,8 +440,16 @@
       elements.resizeInfo.textContent = `${width} × ${height} (${activeZoom}%)`;
       elements.resizeInfo.style.display = "inline";
       elements.specificDeviceSelect.style.display = "none";
+    } else if (currentDevice.id === "custom") {
+      // Bei Custom Devices nur den Zoom anzeigen
+      elements.resizeInfo.textContent = `(${activeZoom}%)`;
+      elements.resizeInfo.style.display = "inline";
+      elements.specificDeviceSelect.style.display = "inline-block";
     } else {
-      elements.resizeInfo.style.display = "none";
+      // Zeige die aktuelle Device-Größe in der Bottom-Bar an und den Zoom in Klammern
+      let dims = currentDevice[currentOrientation] || currentDevice.portrait;
+      elements.resizeInfo.textContent = `${dims.width} × ${dims.height} (${activeZoom}%)`;
+      elements.resizeInfo.style.display = "inline";
       elements.specificDeviceSelect.style.display = "inline-block";
     }
   }
@@ -400,6 +470,8 @@
       selectedTabletDeviceId: selectedTabletDeviceId,
       orientation: currentOrientation,
       userHasManuallyZoomedResponsive: userHasManuallyZoomedResponsive,
+      customDeviceWidth: customDeviceWidth,
+      customDeviceHeight: customDeviceHeight,
     });
   }
 
@@ -429,6 +501,12 @@
       selectedMobileDeviceId = DEFAULT_MOBILE_ID;
     if (!DEVICE_PRESETS.find((d) => d.id === selectedTabletDeviceId))
       selectedTabletDeviceId = DEFAULT_TABLET_ID;
+      
+    // Zurücksetzen des userHasManuallyZoomedResponsive-Flags, 
+    // damit die automatische Zoom-Berechnung beim Start angewendet wird
+    if (activeBreakpoint === "responsive") {
+      userHasManuallyZoomedResponsive = false;
+    }
 
     navigateTo(currentUrl, false);
     setViewport(activeBreakpoint, currentOrientation);
@@ -439,15 +517,25 @@
   let resizeTimeout;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(
-      () => setViewport(activeBreakpoint, currentOrientation),
-      150
-    );
+    resizeTimeout = setTimeout(() => {
+      // Bei Größenänderung im Responsive-Modus den Zoom neu berechnen,
+      // aber nur wenn der Benutzer nicht manuell gezoomt hat
+      if (activeBreakpoint === "responsive" && !userHasManuallyZoomedResponsive) {
+        const panelWidth = elements.iframeHost.offsetWidth;
+        if (panelWidth > 0) {
+          const newZoom = Math.round((panelWidth / DESKTOP_REFERENCE_WIDTH) * 100);
+          activeZoom = Math.max(25, Math.min(100, newZoom));
+        }
+      }
+      setViewport(activeBreakpoint, currentOrientation);
+    }, 150);
   });
 
-  elements.deviceResponsiveButton?.addEventListener("click", () =>
-    setViewport("responsive")
-  );
+  elements.deviceResponsiveButton?.addEventListener("click", () => {
+    // Zurücksetzen des Flags, damit der Zoom neu berechnet wird
+    userHasManuallyZoomedResponsive = false;
+    setViewport("responsive");
+  });
   elements.deviceMobileButton?.addEventListener("click", () =>
     setViewport("mobile")
   );
@@ -462,6 +550,23 @@
     } else if (activeBreakpoint === "tablet") {
       selectedTabletDeviceId = deviceId;
     }
+
+    // Benutzerdefinierte Eingabefelder anzeigen/verstecken je nach Auswahl
+    if (elements.customDeviceContainer) {
+      elements.customDeviceContainer.style.display = 
+        deviceId === "custom" ? "flex" : "none";
+        
+      // Sicherstellen, dass die Input-Felder die aktuellen Werte anzeigen
+      if (deviceId === "custom") {
+        if (elements.customDeviceWidthInput) {
+          elements.customDeviceWidthInput.value = customDeviceWidth;
+        }
+        if (elements.customDeviceHeightInput) {
+          elements.customDeviceHeightInput.value = customDeviceHeight;
+        }
+      }
+    }
+    
     setViewport(activeBreakpoint, currentOrientation);
   });
 
@@ -486,13 +591,95 @@
   elements.devToolsButton?.addEventListener("click", () =>
     vscode.postMessage({ type: "openDevTools" })
   );
-  elements.zoomInButton?.addEventListener("click", () =>
-    setZoomInternal(activeZoom + 25, false)
-  );
-  elements.zoomOutButton?.addEventListener("click", () =>
-    setZoomInternal(activeZoom - 25, false)
-  );
+  elements.zoomInButton?.addEventListener("click", () => {
+    // Wenn der aktuelle Zoom kein Vielfaches von 10 ist, zuerst auf das nächste Vielfache runden
+    if (activeZoom % 10 !== 0) {
+      setZoomInternal(Math.ceil(activeZoom / 10) * 10, false);
+    } else {
+      setZoomInternal(activeZoom + 10, false);
+    }
+  });
+  elements.zoomOutButton?.addEventListener("click", () => {
+    if (activeZoom % 10 !== 0) {
+      setZoomInternal(Math.floor(activeZoom / 10) * 10, false);
+    } else {
+      setZoomInternal(activeZoom - 10, false);
+    }
+  });
   elements.rotateDeviceButton?.addEventListener("click", toggleOrientation);
+
+  // Event-Handler für benutzerdefinierte Geräte
+  let customDeviceUpdateTimeout;
+  
+  if (elements.customDeviceWidthInput) {
+    elements.customDeviceWidthInput.value = customDeviceWidth;
+    
+    // Input-Event für Live-Updates mit Verzögerung
+    elements.customDeviceWidthInput.addEventListener("input", (event) => {
+      const value = parseInt(event.target.value, 10);
+      if (!isNaN(value) && value > 0) {
+        customDeviceWidth = value;
+        
+        // Verzögerung hinzufügen, damit nicht bei jedem Tastendruck aktualisiert wird
+        clearTimeout(customDeviceUpdateTimeout);
+        customDeviceUpdateTimeout = setTimeout(updateCustomDevice, 300);
+      }
+    });
+    
+    // Change-Event für sofortiges Update beim Verlassen des Feldes
+    elements.customDeviceWidthInput.addEventListener("change", (event) => {
+      const value = parseInt(event.target.value, 10);
+      if (!isNaN(value) && value > 0) {
+        customDeviceWidth = value;
+        updateCustomDevice();
+      }
+    });
+  }
+  
+  if (elements.customDeviceHeightInput) {
+    elements.customDeviceHeightInput.value = customDeviceHeight;
+    
+    // Input-Event für Live-Updates mit Verzögerung
+    elements.customDeviceHeightInput.addEventListener("input", (event) => {
+      const value = parseInt(event.target.value, 10);
+      if (!isNaN(value) && value > 0) {
+        customDeviceHeight = value;
+        
+        // Verzögerung hinzufügen, damit nicht bei jedem Tastendruck aktualisiert wird
+        clearTimeout(customDeviceUpdateTimeout);
+        customDeviceUpdateTimeout = setTimeout(updateCustomDevice, 300);
+      }
+    });
+    
+    // Change-Event für sofortiges Update beim Verlassen des Feldes
+    elements.customDeviceHeightInput.addEventListener("change", (event) => {
+      const value = parseInt(event.target.value, 10);
+      if (!isNaN(value) && value > 0) {
+        customDeviceHeight = value;
+        updateCustomDevice();
+      }
+    });
+  }
+  
+  function updateCustomDevice() {
+    if (activeBreakpoint === "mobile" || activeBreakpoint === "tablet") {
+      // Aktualisiere die Option im Dropdown (nur Name)
+      const customOption = Array.from(elements.specificDeviceSelect.options).find(
+        option => option.value === "custom"
+      );
+      if (customOption) {
+        customOption.textContent = `Custom`;
+      }
+      // Aktualisiere die Ansicht
+      setViewport(activeBreakpoint, currentOrientation);
+      // Sende die Änderungen an das Webview
+      vscode.postMessage({
+        type: "viewParametersChanged",
+        customDeviceWidth: customDeviceWidth,
+        customDeviceHeight: customDeviceHeight
+      });
+    }
+  }
 
   window.addEventListener("message", (event) => {
     const { command, url, isInitialLoad, state: newState } = event.data;
@@ -521,6 +708,8 @@
           currentOrientation = newState.orientation ?? "portrait";
           userHasManuallyZoomedResponsive =
             newState.userHasManuallyZoomedResponsive ?? false;
+          customDeviceWidth = newState.customDeviceWidth ?? customDeviceWidth;
+          customDeviceHeight = newState.customDeviceHeight ?? customDeviceHeight;
 
           if (
             !DEVICE_PRESETS.find(
@@ -535,6 +724,16 @@
           )
             selectedTabletDeviceId = DEFAULT_TABLET_ID;
 
+          // Beim Wiederherstellen im Responsive-Modus den Zoom automatisch anpassen,
+          // es sei denn, der Benutzer hat manuell gezoomt
+          if (activeBreakpoint === "responsive" && !userHasManuallyZoomedResponsive) {
+            const panelWidth = elements.iframeHost.offsetWidth;
+            if (panelWidth > 0) {
+              activeZoom = Math.round((panelWidth / DESKTOP_REFERENCE_WIDTH) * 100);
+              activeZoom = Math.max(25, Math.min(100, activeZoom));
+            }
+          }
+          
           setUrlInAddressBar(currentUrl);
           setViewport(activeBreakpoint, currentOrientation);
 

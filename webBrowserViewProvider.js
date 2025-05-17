@@ -31,6 +31,8 @@ class WebBrowserViewProvider {
     selectedTabletDeviceId: "",
     orientation: "portrait",
     userHasManuallyZoomedResponsive: false,
+    customDeviceWidth: 360,
+    customDeviceHeight: 640,
   };
 
   constructor(extensionUri, context) {
@@ -62,6 +64,10 @@ class WebBrowserViewProvider {
       this._webviewState.userHasManuallyZoomedResponsive =
         savedState.userHasManuallyZoomedResponsive ??
         this._webviewState.userHasManuallyZoomedResponsive;
+      this._webviewState.customDeviceWidth =
+        savedState.customDeviceWidth ?? this._webviewState.customDeviceWidth;
+      this._webviewState.customDeviceHeight =
+        savedState.customDeviceHeight ?? this._webviewState.customDeviceHeight;
     }
   }
 
@@ -115,6 +121,10 @@ class WebBrowserViewProvider {
           this._webviewState.userHasManuallyZoomedResponsive =
             data.userHasManuallyZoomedResponsive ??
             this._webviewState.userHasManuallyZoomedResponsive;
+          this._webviewState.customDeviceWidth = 
+            data.customDeviceWidth ?? this._webviewState.customDeviceWidth;
+          this._webviewState.customDeviceHeight = 
+            data.customDeviceHeight ?? this._webviewState.customDeviceHeight;
           this._saveWebViewState();
           break;
         case "openExternal":
@@ -237,7 +247,9 @@ class WebBrowserViewProvider {
                   data-user-has-manually-zoomed-responsive="${
                     this._webviewState.userHasManuallyZoomedResponsive
                   }"
-                  data-device-frame-radius="var(--device-frame-radius)">
+                  data-device-frame-radius="var(--device-frame-radius)"
+                  data-custom-device-width="${this._webviewState.customDeviceWidth}"
+                  data-custom-device-height="${this._webviewState.customDeviceHeight}">
         </head>
         <body>
             <div class="browser-toolbar top-toolbar">
@@ -273,21 +285,6 @@ class WebBrowserViewProvider {
             </div>
 
             <div class="browser-toolbar bottom-toolbar">
-                <div class="left-controls">
-                    <button id="rotateDevice" title="Rotate Device" class="icon-button">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-                    </button>
-                    <div id="zoomControls" class="zoom-controls">
-                        <button id="zoomOut" title="Zoom out" class="icon-button">
-                            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" stroke-width="2"></line></svg>
-                        </button>
-                        <span id="zoomLevel" title="Current Zoom">100%</span>
-                        <button id="zoomIn" title="Zoom in" class="icon-button">
-                            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-width="2"></line><line x1="5" y1="12" x2="19" y2="12" stroke-width="2"></line></svg>
-                        </button>
-                    </div>
-                </div>
-
                 <div class="device-controls">
                     <button id="deviceResponsive" title="Responsive" class="icon-button device-button active">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -302,12 +299,26 @@ class WebBrowserViewProvider {
                     <button id="deviceTablet" title="Tablet" class="icon-button device-button">
                         <svg viewBox="0 0 24 24"><rect x="3" y="2" width="18" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                     </button>
-                </div>
-               
-                <div class="right-controls">
-                    <span class="resize-info" id="resizeInfo"></span>
                     <select id="specificDeviceSelect" class="specific-device-select-dropdown" style="display: none;" title="Select Specific Device"></select>
+                    <div id="customDeviceContainer" class="custom-device-container" style="display: none;">
+                      <input type="number" id="customDeviceWidth" class="custom-device-input" placeholder="Breite" title="Benutzerdefinierte Breite" min="100" max="3000" />
+                      <span class="custom-device-separator">×</span>
+                      <input type="number" id="customDeviceHeight" class="custom-device-input" placeholder="Höhe" title="Benutzerdefinierte Höhe" min="100" max="3000" />
+                    </div>
+                    <button id="rotateDevice" title="Rotate Device" class="icon-button">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                    </button>
                 </div>
+                <div class="zoom-controls" id="zoomControls">
+                    <button id="zoomOut" title="Zoom out" class="icon-button">
+                        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" stroke-width="2"></line></svg>
+                    </button>
+                    <span id="zoomLevel" title="Current Zoom">100%</span>
+                    <button id="zoomIn" title="Zoom in" class="icon-button">
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-width="2"></line><line x1="5" y1="12" x2="19" y2="12" stroke-width="2"></line></svg>
+                    </button>
+                </div>
+                <span class="resize-info" id="resizeInfo"></span>
             </div>
 
             <script nonce="${nonce}" src="${scriptUri}"></script>

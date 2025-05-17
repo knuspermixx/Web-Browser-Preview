@@ -34,6 +34,38 @@ body, html {
   font-size: 13px;
 }
 
+/* Custom device styles */
+.custom-device-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 8px;
+}
+
+.custom-device-input {
+  width: 50px;
+  height: 22px;
+  background-color: var(--dropdown-background);
+  color: var(--dropdown-foreground);
+  border: 1px solid var(--dropdown-border);
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-size: 10px;
+  text-align: center;
+}
+
+.custom-device-input:focus {
+  outline: none;
+  border-color: var(--button-active-border);
+  box-shadow: 0 0 0 1px var(--button-active-border);
+}
+
+.custom-device-separator {
+  font-size: 10px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
 .browser-toolbar {
   display: flex;
   align-items: center;
@@ -50,8 +82,12 @@ body, html {
 }
 
 .bottom-toolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
   border-top: 1px solid var(--border-color);
-  justify-content: space-between;
   padding: 4px 12px;
 }
 
@@ -65,9 +101,18 @@ body, html {
   gap: 4px;
 }
 
+.device-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  gap: 6px;
+}
+
 .zoom-controls {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
 }
 
@@ -203,6 +248,9 @@ body, html {
   pointer-events: none;
   white-space: nowrap;
   line-height: var(--icon-button-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .specific-device-select-dropdown {
@@ -224,26 +272,6 @@ body, html {
   box-shadow: 0 0 0 1px var(--button-active-border);
 }
 
-
-.device-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-grow: 1;
-  gap: 6px;
-}
-.device-button svg {
-  width: calc(var(--icon-svg-size) + 2px);
-  height: calc(var(--icon-svg-size) + 2px);
-}
-
-#devToolsButton svg {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5px;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
 
 @media (max-width: 550px) {
   .url-container { min-width: 80px; }
