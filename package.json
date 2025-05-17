@@ -1,0 +1,58 @@
+{
+  "name": "web-browser-preview",
+  "displayName": "Web Browser Preview",
+  "description": "A web browser preview in a VSCode side panel using a Webview.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./extension.js",
+  "enabledApiProposals": [
+    "externalUriOpener"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "web-browser-preview-sidebar",
+          "title": "Web Preview",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "web-browser-preview-sidebar": [
+        {
+          "icon": "media/icon.svg",
+          "id": "webBrowserPreviewView",
+          "name": "Web Preview",
+          "type": "webview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "web-browser-preview.focus",
+        "title": "Web Browser Preview: Show",
+        "category": "Web Browser Preview"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "web-browser-preview.focus",
+        "key": "alt+w",
+        "mac": "alt+w",
+        "when": "editorFocus || viewFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^9.26.0"
+  }
+}
