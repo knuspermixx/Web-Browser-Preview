@@ -22,12 +22,12 @@ Preview local websites directly in VS Code with responsive design testing capabi
 
 ## Responsive View
 
-![Responsive View](https://github.com/knuspermixx/Web-Browser-Preview/tree/main/media/screenshot-1.png)
+![Responsive View](https://github.com/knuspermixx/Web-Browser-Preview/raw/main/media/screenshot-1.png)
 
 The browser automatically adjusts to fit the panel size and includes zoom controls for precise viewing.
 
 ## Mobile/Tablet View
 
-![Mobile/Tablet View](https://github.com/knuspermixx/Web-Browser-Preview/tree/main/media/screenshot-2.png)
+![Mobile/Tablet View](https://github.com/knuspermixx/Web-Browser-Preview/raw/main/media/screenshot-2.png)
 
 Easily test how your website looks on specific device sizes with proper device frames and orientation controls.
