@@ -4,7 +4,10 @@ const { WebBrowserViewProvider } = require("./webBrowserViewProvider");
 let globalWebviewProvider = null;
 
 function activate(context) {
-  const webviewProvider = new WebBrowserViewProvider(context.extensionUri, context);
+  const webviewProvider = new WebBrowserViewProvider(
+    context.extensionUri,
+    context
+  );
   globalWebviewProvider = webviewProvider;
 
   context.subscriptions.push(
@@ -16,11 +19,14 @@ function activate(context) {
   );
 
   const registerCommand = (command, callback) => {
-    context.subscriptions.push(vscode.commands.registerCommand(command, callback));
+    context.subscriptions.push(
+      vscode.commands.registerCommand(command, callback)
+    );
   };
 
   registerCommand("web-browser-preview.openUrl", async () => {
-    const currentUrl = webviewProvider.getCurrentUrl() ?? webviewProvider.getWebViewState().url;
+    const currentUrl =
+      webviewProvider.getCurrentUrl() ?? webviewProvider.getWebViewState().url;
     const url = await vscode.window.showInputBox({
       prompt: "Enter the URL to open",
       value: currentUrl || "https://",
@@ -28,7 +34,9 @@ function activate(context) {
     });
     if (url && webviewProvider) {
       webviewProvider.navigate(url);
-      vscode.commands.executeCommand(`${WebBrowserViewProvider.viewType}.focus`);
+      vscode.commands.executeCommand(
+        `${WebBrowserViewProvider.viewType}.focus`
+      );
     }
   });
 
@@ -40,10 +48,12 @@ function activate(context) {
       {
         enableScripts: true,
         retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, "webview")],
+        localResourceRoots: [
+          vscode.Uri.joinPath(context.extensionUri, "webview"),
+        ],
       }
     );
-    panel.webview.html = webviewProvider.getHtmlForWebview(panel.webview); // Verwende eine generische Methode
+    panel.webview.html = webviewProvider.getHtmlForWebview(panel.webview);
 
     const messageListener = panel.webview.onDidReceiveMessage(
       (message) => {
@@ -55,13 +65,16 @@ function activate(context) {
               panel.title = "Web Browser Preview Panel";
             }
             break;
-          // Hier könnten weitere Nachrichten vom Panel behandelt werden
         }
       },
       undefined,
       context.subscriptions
     );
-    panel.onDidDispose(() => messageListener.dispose(), null, context.subscriptions);
+    panel.onDidDispose(
+      () => messageListener.dispose(),
+      null,
+      context.subscriptions
+    );
   });
 
   registerCommand("web-browser-preview.focus", () => {
@@ -70,14 +83,18 @@ function activate(context) {
 
   registerCommand("web-browser-preview.checkConnection", () => {
     if (webviewProvider) {
-      const status = webviewProvider.isViewVisible() ? "active" : "inactive or not focused";
-      vscode.window.showInformationMessage(`Browser Preview connection (Sidebar) is ${status}.`);
+      const status = webviewProvider.isViewVisible()
+        ? "active"
+        : "inactive or not focused";
+      vscode.window.showInformationMessage(
+        `Browser Preview connection (Sidebar) is ${status}.`
+      );
     }
   });
 
   const createNavigationCommand = (commandName, action) => {
     registerCommand(`web-browser-preview.${commandName}`, () => {
-      if (webviewProvider?.isViewVisible()) { // Prüfe ob die View sichtbar ist
+      if (webviewProvider?.isViewVisible()) {
         action();
       } else {
         vscode.window.showInformationMessage(

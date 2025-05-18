@@ -14,48 +14,20 @@ Preview local websites directly in VS Code with responsive design testing capabi
 
 ## Getting Started
 
-1. Open the browser: Press `Alt+W` or click the Web Preview icon in the activity bar
-2. Enter a URL in the address bar or use the command palette: `Web Browser Preview: Open URL`
-3. Select your preferred view mode (Responsive, Mobile, or Tablet)
-4. For device-specific testing, choose a device from the dropdown menu
+1. For best experience, add the extension to the Secondary Side Bar: Right-click the Web Preview icon → **Move to** → **Secondary Side Bar**.
+2. Open the browser: Press `Alt+W` (Windows/Linux) or `Option+W` (Mac) or click the Web Preview icon in the activity bar
+3. Enter a URL in the address bar or use the command palette: `Web Browser Preview: Open URL`
+4. Select your preferred view mode (Responsive, Mobile, or Tablet)
+5. For device-specific testing, choose a device from the dropdown menu
 
 ## Responsive View
-![Responsive View](./media/image.png)
+
+![Responsive View](https://github.com/knuspermixx/Web-Browser-Preview/tree/main/media/screenshot-1.png)
 
 The browser automatically adjusts to fit the panel size and includes zoom controls for precise viewing.
 
 ## Mobile/Tablet View
-![Mobile/Tablet View](./media/image-2.png)
+
+![Mobile/Tablet View](https://github.com/knuspermixx/Web-Browser-Preview/tree/main/media/screenshot-2.png)
 
 Easily test how your website looks on specific device sizes with proper device frames and orientation controls.
-
-## Device Presets
-
-Test your local websites on accurate screen sizes for the latest devices:
-
-### Mobile Devices
-- iPhone SE (3rd gen)
-- Samsung Galaxy S25
-- iPhone 16 Pro
-- Google Pixel 9
-- Samsung Galaxy S25 Ultra
-- iPhone 16 Pro Max
-
-### Tablets
-- iPad Mini (6th gen)
-- Samsung Galaxy Tab S10 (11")
-- iPad Air 11" (M2)
-- Samsung Galaxy Tab S10 Ultra
-- iPad Pro 13" (M4)
-
-
-## Additional Features
-
-- **Development Tools** - Quick access to web development tools
-- **State Preservation** - Browser state is preserved between sessions
-
-## Requirements
-
-- Visual Studio Code ^1.80.0
-
-

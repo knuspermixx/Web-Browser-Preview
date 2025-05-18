@@ -2,7 +2,8 @@ const vscode = require("vscode");
 
 function getNonce() {
   let text = "";
-  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < 32; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
@@ -24,8 +25,8 @@ class WebBrowserViewProvider {
 
   _webviewState = {
     url: "about:blank",
-    zoom: 100,
-    currentMode: "responsive", // 'responsive' or 'device' (bestimmt aktiven Tab)
+    zoom: 70,
+    currentMode: "responsive",
     selectedDeviceId: "",
     orientation: "portrait",
     userHasManuallyZoomedResponsive: false,
@@ -45,13 +46,23 @@ class WebBrowserViewProvider {
     );
     if (savedState) {
       this._webviewState.url = savedState.url ?? this._webviewState.url;
-      this._webviewState.zoom = typeof savedState.zoom === "number" ? savedState.zoom : this._webviewState.zoom;
-      this._webviewState.currentMode = savedState.currentMode ?? this._webviewState.currentMode;
-      this._webviewState.selectedDeviceId = savedState.selectedDeviceId ?? this._webviewState.selectedDeviceId;
-      this._webviewState.orientation = savedState.orientation ?? this._webviewState.orientation;
-      this._webviewState.userHasManuallyZoomedResponsive = savedState.userHasManuallyZoomedResponsive ?? this._webviewState.userHasManuallyZoomedResponsive;
-      this._webviewState.customDeviceWidth = savedState.customDeviceWidth ?? this._webviewState.customDeviceWidth;
-      this._webviewState.customDeviceHeight = savedState.customDeviceHeight ?? this._webviewState.customDeviceHeight;
+      this._webviewState.zoom =
+        typeof savedState.zoom === "number"
+          ? savedState.zoom
+          : this._webviewState.zoom;
+      this._webviewState.currentMode =
+        savedState.currentMode ?? this._webviewState.currentMode;
+      this._webviewState.selectedDeviceId =
+        savedState.selectedDeviceId ?? this._webviewState.selectedDeviceId;
+      this._webviewState.orientation =
+        savedState.orientation ?? this._webviewState.orientation;
+      this._webviewState.userHasManuallyZoomedResponsive =
+        savedState.userHasManuallyZoomedResponsive ??
+        this._webviewState.userHasManuallyZoomedResponsive;
+      this._webviewState.customDeviceWidth =
+        savedState.customDeviceWidth ?? this._webviewState.customDeviceWidth;
+      this._webviewState.customDeviceHeight =
+        savedState.customDeviceHeight ?? this._webviewState.customDeviceHeight;
     }
   }
 
@@ -89,27 +100,37 @@ class WebBrowserViewProvider {
           }
           break;
         case "viewParametersChanged":
-          this._webviewState.currentMode = data.currentMode ?? this._webviewState.currentMode;
-          this._webviewState.selectedDeviceId = data.selectedDeviceId ?? this._webviewState.selectedDeviceId;
-          this._webviewState.orientation = data.orientation ?? this._webviewState.orientation;
+          this._webviewState.currentMode =
+            data.currentMode ?? this._webviewState.currentMode;
+          this._webviewState.selectedDeviceId =
+            data.selectedDeviceId ?? this._webviewState.selectedDeviceId;
+          this._webviewState.orientation =
+            data.orientation ?? this._webviewState.orientation;
           this._webviewState.zoom = data.zoom ?? this._webviewState.zoom;
-          this._webviewState.userHasManuallyZoomedResponsive = data.userHasManuallyZoomedResponsive ?? this._webviewState.userHasManuallyZoomedResponsive;
-          this._webviewState.customDeviceWidth = data.customDeviceWidth ?? this._webviewState.customDeviceWidth;
-          this._webviewState.customDeviceHeight = data.customDeviceHeight ?? this._webviewState.customDeviceHeight;
+          this._webviewState.userHasManuallyZoomedResponsive =
+            data.userHasManuallyZoomedResponsive ??
+            this._webviewState.userHasManuallyZoomedResponsive;
+          this._webviewState.customDeviceWidth =
+            data.customDeviceWidth ?? this._webviewState.customDeviceWidth;
+          this._webviewState.customDeviceHeight =
+            data.customDeviceHeight ?? this._webviewState.customDeviceHeight;
           this._saveWebViewState();
           break;
         case "openExternal":
           try {
             vscode.env.openExternal(vscode.Uri.parse(data.url));
           } catch (e) {
-            vscode.window.showErrorMessage(`Invalid URL for external opening: ${data.url}`);
+            vscode.window.showErrorMessage(
+              `Invalid URL for external opening: ${data.url}`
+            );
           }
           break;
         case "openDevTools":
-          vscode.commands.executeCommand("workbench.action.webview.openDeveloperTools");
+          vscode.commands.executeCommand(
+            "workbench.action.webview.openDeveloperTools"
+          );
           break;
         default:
-          // Unbekannte Nachricht ignorieren
       }
     });
 
@@ -154,22 +175,39 @@ class WebBrowserViewProvider {
       isInitialLoad: false,
     });
     if (success && this._view) {
-      vscode.commands.executeCommand(`${WebBrowserViewProvider.viewType}.focus`);
+      vscode.commands.executeCommand(
+        `${WebBrowserViewProvider.viewType}.focus`
+      );
     }
   }
 
-  goBack() { this.postMessageToWebview({ command: "goBack" }); }
-  goForward() { this.postMessageToWebview({ command: "goForward" }); }
-  reload() { this.postMessageToWebview({ command: "reload" }); }
+  goBack() {
+    this.postMessageToWebview({ command: "goBack" });
+  }
+  goForward() {
+    this.postMessageToWebview({ command: "goForward" });
+  }
+  reload() {
+    this.postMessageToWebview({ command: "reload" });
+  }
 
-  getCurrentUrl() { return this._webviewState.url; }
-  getWebViewState() { return { ...this._webviewState }; }
-  isViewVisible() { return this._view?.visible ?? false; }
-
+  getCurrentUrl() {
+    return this._webviewState.url;
+  }
+  getWebViewState() {
+    return { ...this._webviewState };
+  }
+  isViewVisible() {
+    return this._view?.visible ?? false;
+  }
 
   getHtmlForWebview(webview) {
-    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "webview", "script.js"));
-    const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "webview", "style.css"));
+    const scriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "webview", "script.js")
+    );
+    const styleUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "webview", "style.css")
+    );
     const nonce = getNonce();
 
     return `<!DOCTYPE html>
@@ -177,48 +215,61 @@ class WebBrowserViewProvider {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="theme-color" content="transparent">
             <meta http-equiv="Content-Security-Policy" content="
                 default-src 'none';
                 font-src ${webview.cspSource} data:;
-                style-src ${webview.cspSource} 'unsafe-inline'; 
-                script-src 'nonce-${nonce}'; 
-                frame-src *; 
+                style-src 'self' ${webview.cspSource} 'unsafe-inline';
+                script-src 'nonce-${nonce}';
+                frame-src *;
                 connect-src ${webview.cspSource};
-                img-src ${webview.cspSource} data:; 
+                img-src ${webview.cspSource} data:;
             ">
             <link href="${styleUri}" rel="stylesheet">
             <title>Web Browser Preview</title>
-            <meta id="web-browser-preview-settings" 
-                  data-initial-url="${escapeAttribute(this._webviewState.url)}" 
-                  data-zoom="${this._webviewState.zoom}" 
-                  data-current-mode="${escapeAttribute(this._webviewState.currentMode)}"
-                  data-selected-device-id="${escapeAttribute(this._webviewState.selectedDeviceId)}"
-                  data-orientation="${escapeAttribute(this._webviewState.orientation)}"
-                  data-user-has-manually-zoomed-responsive="${this._webviewState.userHasManuallyZoomedResponsive}"
-                  data-device-frame-radius="var(--device-frame-radius)"
-                  data-custom-device-width="${this._webviewState.customDeviceWidth}"
-                  data-custom-device-height="${this._webviewState.customDeviceHeight}">
+            <meta id="web-browser-preview-settings"
+                data-initial-url="${escapeAttribute(this._webviewState.url)}"
+                data-zoom="${this._webviewState.zoom}"
+                data-current-mode="${escapeAttribute(
+                  this._webviewState.currentMode
+                )}"
+                data-selected-device-id="${escapeAttribute(
+                  this._webviewState.selectedDeviceId
+                )}"
+                data-orientation="${escapeAttribute(
+                  this._webviewState.orientation
+                )}"
+                data-user-has-manually-zoomed-responsive="${
+                  this._webviewState.userHasManuallyZoomedResponsive
+                }"
+                data-device-frame-radius="var(--device-frame-radius)"
+                data-custom-device-width="${
+                  this._webviewState.customDeviceWidth
+                }"
+                data-custom-device-height="${
+                  this._webviewState.customDeviceHeight
+                }">
         </head>
         <body>
             <div class="browser-toolbar top-toolbar">
                 <div class="navigation-controls">
-                    <button id="backButton" title="Back" class="icon-button">
+                    <button id="backButton" title="Zurück" class="icon-button">
                         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                     </button>
-                    <button id="forwardButton" title="Forward" class="icon-button">
+                    <button id="forwardButton" title="Vorwärts" class="icon-button">
                         <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
-                    <button id="reloadButton" title="Reload" class="icon-button">
+                    <button id="reloadButton" title="Neu laden" class="icon-button">
                         <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
                     </button>
                 </div>
                 <div class="url-container">
-                    <input type="text" id="urlInput" placeholder="Enter URL..." />
+                    <input type="text" id="urlInput" placeholder="URL eingeben..." />
                 </div>
                 <div class="action-controls">
-                    <button id="devToolsButton" title="Open Developer Tools" class="icon-button">
-                        <span style="margin-right:6px;">Dev Tools</span>
-                        <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <button id="devToolsButton" title="Entwicklertools öffnen" class="icon-button">
+                        <span>Dev Tools</span>
+                        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="2" y="2" width="20" height="20" rx="3" />
                             <polyline points="10 8 6 12 10 16" />
                             <polyline points="14 8 18 12 14 16" />
@@ -235,25 +286,33 @@ class WebBrowserViewProvider {
 
             <div class="browser-toolbar bottom-toolbar">
                 <div class="controls-area">
-                    <select id="deviceSelectDropdown" title="Select Device"></select>
-                    <div id="customDeviceContainer" class="custom-device-container">
-                        <input type="number" id="customDeviceWidth" class="custom-device-input" placeholder="W" title="Custom Width (px)" min="50" max="5000" />
-                        <span class="custom-device-separator">×</span>
-                        <input type="number" id="customDeviceHeight" class="custom-device-input" placeholder="H" title="Custom Height (px)" min="50" max="5000" />
-                    </div>
-                    <button id="rotateDeviceButton" title="Rotate Device" class="icon-button">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-                    </button>
-                    <div class="zoom-controls-container" id="zoomControlsContainer">
-                        <button id="zoomOut" title="Zoom out" class="icon-button">
-                            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" stroke-width="2"></line></svg>
+                    <div class="device-controls-group">
+                        <select id="deviceSelectDropdown" title="Select Device"></select>
+                        <button id="rotateDeviceButton" title="Rotate Device" class="icon-button">
+                            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
                         </button>
-                        <span id="zoomLevel" title="Current Zoom">100%</span>
-                        <button id="zoomIn" title="Zoom in" class="icon-button">
-                            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-width="2"></line><line x1="5" y1="12" x2="19" y2="12" stroke-width="2"></line></svg>
-                        </button>
-                    </div>
-                    <span class="dimension-info" id="resizeInfo"></span>
+                        </div>
+                    <span class="dimension-info" id="dimensionInfoArea">
+                        <span id="deviceInfoTextLabel" style="display:none;"></span>
+                        <div id="customDimensionInputGroup" style="display:none;">
+                            <input type="number" id="customDeviceWidth" class="custom-device-input" placeholder="W" title="Custom Width (px)" min="50" max="5000" />
+                            <span class="custom-device-separator">×</span>
+                            <input type="number" id="customDeviceHeight" class="custom-device-input" placeholder="H" title="Custom Height (px)" min="50" max="5000" />
+                            px
+                        </div>
+                        <span id="deviceInfoZoomText" style="display:none;"></span>
+
+                        <div id="responsiveControlsGroup" style="display:none;">
+                            <span id="responsiveWidthLabel"></span>
+                            <button id="zoomOutResponsiveButton" title="Zoom out" class="icon-button responsive-zoom-button">
+                                <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" stroke-width="2.5"></line></svg>
+                            </button>
+                            <span id="zoomLevelResponsiveText" title="Current Zoom">100%</span>
+                            <button id="zoomInResponsiveButton" title="Zoom in" class="icon-button responsive-zoom-button">
+                                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-width="2.5"></line><line x1="5" y1="12" x2="19" y2="12" stroke-width="2.5"></line></svg>
+                            </button>
+                        </div>
+                    </span>
                 </div>
             </div>
 

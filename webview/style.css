@@ -1,31 +1,46 @@
 :root {
-  --toolbar-height: 30px; /* Höhe der oberen Toolbar */
-  --bottom-toolbar-height: auto; /* Höhe der unteren Toolbar passt sich an Inhalt an */
-  --icon-button-size: 22px;
-  --icon-padding: 2px;
+  --space-xxs: 2px;
+  --space-xs: 4px;
+  --space-sm: 6px;
+  --space-md: 8px;
+  --space-lg: 12px;
+  --space-xl: 16px;
+
+  --toolbar-height: 36px;
+  --bottom-toolbar-height: auto;
+  --icon-button-size: 28px;
+  --responsive-zoom-button-size: 22px;
+  --icon-padding: var(--space-xs);
   --icon-svg-size: 16px;
-  --border-color: var(--vscode-input-border, #404040);
-  --toolbar-background: var(--vscode-sideBar-background, var(--vscode-editor-background, #252526));
-  --input-background: var(--vscode-input-background, #3c3c3c);
+  --responsive-zoom-svg-size: 12px;
+  --container-padding: var(--space-md);
+  --element-gap: var(--space-md);
+  --input-height: 28px;
+
+  --border-color: var(--vscode-input-border, #505050);
+  --toolbar-background: transparent;
+  --input-background: transparent;
   --input-foreground: var(--vscode-input-foreground, #cccccc);
   --button-foreground: var(--vscode-icon-foreground, #c5c5c5);
-  --button-hover-background: var(--vscode-toolbar-hoverBackground, #383838);
-  --button-active-background: var(--vscode-toolbar-activeBackground, #4f4f4f);
+  --button-hover-background: var(--vscode-toolbar-hoverBackground, rgba(56, 56, 56, 0.5));
+  --button-active-background: var(--vscode-toolbar-activeBackground, rgba(79, 79, 79, 0.5));
   --button-active-border: var(--vscode-focusBorder, #007fd4);
-  --editor-background: var(--vscode-editor-background, #1e1e1e);
+  --editor-background: transparent;
   --device-frame-radius: 8px;
   --device-padding-min: 10px;
   --device-padding-max: 15px;
-  --dropdown-background: var(--vscode-input-background, #3c3c3c);
+  --dropdown-background: transparent;
   --dropdown-foreground: var(--vscode-input-foreground, #cccccc);
-  --dropdown-border: var(--vscode-input-border, #404040);
+  --dropdown-border: var(--vscode-input-border, #505050);
   --tab-inactive-background: transparent;
-  --tab-active-background: var(--vscode-list-activeSelectionBackground, #094771);
+  --tab-active-background: transparent;
   --tab-active-foreground: var(--vscode-list-activeSelectionForeground, #ffffff);
-  --tab-hover-background: var(--vscode-list-hoverBackground, #2a2d2e);
+  --tab-hover-background: rgba(42, 45, 46, 0.5);
+  --divider-color: var(--vscode-editorWidget-border, #404040);
 }
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   height: 100vh;
@@ -33,45 +48,48 @@ body, html {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
   background-color: var(--toolbar-background);
   color: var(--input-foreground);
-  font-size: 13px;
+  font-size: 12px;
+  
 }
 
 .browser-toolbar {
   display: flex;
   align-items: center;
-  padding: 0 8px;
+  padding: var(--space-xs) var(--space-md);
   background: var(--toolbar-background);
   flex-shrink: 0;
-  gap: 8px;
+  gap: var(--space-md);
+  border-bottom: 1px solid var(--divider-color);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .top-toolbar {
   height: var(--toolbar-height);
-  border-bottom: 1px solid var(--border-color);
-  padding: 4px 8px;
+  padding: var(--space-xs) var(--space-md);
 }
 
 .bottom-toolbar {
-  min-height: calc(var(--icon-button-size) + 8px);
-  border-top: 1px solid var(--border-color);
-  padding: 8px 12px;
+  min-height: var(--toolbar-height);
+  border-top: 1px solid var(--divider-color);
+  padding: var(--space-md);
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   background: var(--toolbar-background);
-  gap: 8px;
+  gap: var(--space-md);
   flex-wrap: nowrap;
-  justify-content: space-between;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .navigation-controls,
 .action-controls {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-xs);
 }
 
 .url-container {
@@ -79,7 +97,7 @@ body, html {
   display: flex;
   align-items: center;
   min-width: 100px;
-  margin: 0 4px;
+  margin: 0 var(--space-xs);
 }
 
 #urlInput {
@@ -88,8 +106,8 @@ body, html {
   border: 1px solid var(--border-color);
   background: var(--input-background);
   color: var(--input-foreground);
-  padding: 0 8px;
-  font-size: 12px;
+  padding: 0 var(--space-sm);
+  
   min-width: 0;
   border-radius: 3px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -101,7 +119,6 @@ body, html {
   box-shadow: 0 0 0 1px var(--button-active-border);
 }
 
-/* icon-button: Standard-Button, kann auch Text enthalten */
 .icon-button {
   background: transparent;
   border: 1px solid transparent;
@@ -109,35 +126,40 @@ body, html {
   cursor: pointer;
   min-width: var(--icon-button-size);
   height: var(--icon-button-size);
-  padding: 0 8px;
+  padding: 0 var(--space-sm);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 3px;
-  transition: background-color 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
-  opacity: 0.8;
-  font-size: 12px;
+  transition: background-color 0.15s ease, opacity 0.15s ease,
+    border-color 0.15s ease;
+  opacity: 0.9;
+  
   font-family: inherit;
-  gap: 6px;
+  gap: var(--space-sm);
   line-height: 1;
 }
+
 .icon-button:hover {
   background: var(--button-hover-background);
+  border-color: var(--border-color);
   opacity: 1;
 }
-/* :active und .active für icon-buttons bleiben für Elemente wie DevTools bestehen,
-   aber nicht für die Modus-Buttons, da diese jetzt Tabs sind */
-.icon-button:active {
+
+.icon-button:active,
+.icon-button.active {
   background: var(--button-active-background);
   border-color: var(--button-active-border);
   opacity: 1;
 }
+
 .icon-button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   background: transparent;
   border-color: transparent;
 }
+
 .icon-button svg {
   width: var(--icon-svg-size);
   height: var(--icon-svg-size);
@@ -149,125 +171,119 @@ body, html {
   display: inline-block;
   vertical-align: middle;
 }
+
 .icon-button.filled-icon svg {
   fill: currentColor;
   stroke-width: 0;
 }
 
-/* Spezielles Styling für DevTools-Button, falls nötig */
 #devToolsButton {
-  font-weight: 500;
-  padding-left: 10px;
-  padding-right: 10px;
-  gap: 6px;
+  
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+  gap: var(--space-sm);
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
+  flex-direction: row;
+  flex-wrap: nowrap;
 }
+
 #devToolsButton span {
   margin: 0;
   padding: 0;
-  font-size: 12px;
+  
   font-family: inherit;
-  font-weight: 500;
+  
   letter-spacing: 0.01em;
   line-height: 1;
   color: var(--button-foreground);
+  display: inline-block;
 }
 
-/* Tab Styling */
 .controls-area {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  gap: 12px;
+  gap: var(--space-md);
   width: 100%;
-  min-height: calc(var(--icon-button-size) + 2px);
+  min-height: var(--input-height);
   padding: 0;
   margin: 0;
-  flex-wrap: wrap;
 }
 
-
-.zoom-controls-container {
-  display: flex; /* Wird hier direkt auf flex gesetzt, da es im aktiven Pane ist */
+.device-controls-group {
+  display: flex;
   align-items: center;
-  gap: 4px;
-}
-
-#zoomLevel {
-  font-size: 11px;
-  min-width: 38px;
-  text-align: center;
-  color: var(--button-foreground);
-  padding: 0 4px;
-  cursor: default;
-  line-height: var(--icon-button-size);
-  font-weight: 500;
-}
-
-.custom-device-container {
-  display: flex; /* Wird per JS umgeschaltet */
-  align-items: center;
-  gap: 4px;
+  gap: var(--space-xs);
+  border: 1px solid var(--border-color);
+  padding: var(--space-xxs) var(--space-xs);
+  border-radius: 3px;
+  width: auto;
+  flex-shrink: 0;
+  flex-grow: 0;
+  align-self: center;
 }
 
 .custom-device-input {
   width: 50px;
-  height: 22px;
+  height: 18px;
   background-color: var(--dropdown-background);
   color: var(--dropdown-foreground);
   border: 1px solid var(--dropdown-border);
   border-radius: 3px;
-  padding: 1px 4px;
-  font-size: 10px;
+  padding: 1px var(--space-xs);
+  
   text-align: center;
 }
+
 .custom-device-input:focus {
   outline: none;
   border-color: var(--button-active-border);
   box-shadow: 0 0 0 1px var(--button-active-border);
 }
+
 .custom-device-separator {
-  font-size: 10px;
+  
   opacity: 0.7;
   pointer-events: none;
+  margin: 0 var(--space-xxs);
 }
 
 #deviceSelectDropdown {
   background-color: var(--dropdown-background);
   color: var(--dropdown-foreground);
-  border: 1px solid var(--dropdown-border);
-  border-radius: 3px;
-  padding: 2px 8px;
-  height: 28px;
-  font-size: 11px;
+  border: none;
+  border-radius: 0;
+  padding: var(--space-xxs) var(--space-sm);
+  height: 24px;
+  
   max-width: 180px;
   min-width: 140px;
   text-overflow: ellipsis;
+  margin-right: var(--space-xxs);
 }
+
 #deviceSelectDropdown:focus {
   outline: none;
-  border-color: var(--button-active-border);
-  box-shadow: 0 0 0 1px var(--button-active-border);
 }
 
 #deviceSelectDropdown optgroup {
-  font-weight: 600;
-  font-size: 11px;
+  
+  
   color: var(--dropdown-foreground);
   background-color: var(--dropdown-background);
 }
 
 #deviceSelectDropdown option {
-  padding: 4px;
-  font-size: 11px;
+  padding: var(--space-xs);
+  
 }
 
-/* Standardmäßig unsichtbar, werden per JS gesteuert */
-#customDeviceContainer,
 #rotateDeviceButton {
-  display: none;
+  /* Standardmäßig anzeigen, Sichtbarkeit wird per JS gesteuert */
+  display: inline-flex;
 }
-
 
 #iframeHost {
   flex-grow: 1;
@@ -284,10 +300,11 @@ body, html {
 .device-frame {
   position: relative;
   overflow: hidden;
-  background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: transparent;
+  box-shadow: 0 0 0 1px var(--border-color), 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: var(--device-frame-radius);
-  transition: width 0.3s ease-in-out, height 0.3s ease-in-out, border-radius 0.3s ease-in-out;
+  transition: width 0.3s ease-in-out, height 0.3s ease-in-out,
+    border-radius 0.3s ease-in-out;
 }
 
 #browserFrame {
@@ -303,60 +320,80 @@ body, html {
 
 .dimension-info {
   color: var(--input-foreground);
-  padding: 0 12px;
-  font-size: 11px;
-  opacity: 0.8;
-  pointer-events: none;
+  padding: 0 var(--space-sm);
+  
+  opacity: 1;
   white-space: nowrap;
-  line-height: var(--icon-button-size);
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  justify-content: flex-start;
+  gap: var(--space-xs);
+  text-align: left;
   flex-shrink: 0;
-  flex-grow: 0;
-  min-width: 140px;
-  background-color: var(--dropdown-background);
-  border-radius: 4px;
+  min-width: 150px;
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
   height: 26px;
-  font-weight: 500;
-  margin-left: auto; /* Schiebt das Element nach rechts */
+  
+  margin-left: auto;
+}
+.dimension-info > * {
+  pointer-events: auto;
+}
+
+#deviceInfoTextLabel,
+#deviceInfoZoomText,
+#responsiveWidthLabel,
+#zoomLevelResponsiveText {
+  cursor: default;
+}
+#zoomLevelResponsiveText {
+  text-align: center;
+}
+
+#customDimensionInputGroup {
+  display: none;
+  align-items: center;
+  gap: var(--space-xxs);
 }
 
 
-@media (max-width: 600px) {
-  .url-container { min-width: 80px; }
-  #urlInput { font-size: 11px; }
-  #deviceSelectDropdown { max-width: 120px; min-width: 120px; }
-  .bottom-toolbar {
-    padding: 8px;
-    flex-direction: column;
-    gap: 8px;
-    align-items: stretch;
-  }
-  .controls-area {
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
-    gap: 8px;
-    padding: 0;
-  }
-  .dimension-info {
-    margin-left: 0;
-    width: 100%;
-    text-align: center;
-    min-width: 0;
-  }
-  .zoom-controls-container {
-    justify-content: center;
-  }
+#responsiveControlsGroup {
+  display: none;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
-@media (max-width: 480px) {
-  #deviceSelectDropdown { max-width: 100%; min-width: 100%; width: 100%; }
-  .custom-device-input { width: 40px; }
-  .browser-toolbar { gap: 6px; }
-  .controls-area { gap: 6px; }
-  .zoom-controls-container { width: 100%; justify-content: space-around; }
-  .dimension-info { padding: 0; }
+/* Wrapper für Zoom-Steuerung wie ein Input-Stil */
+.responsive-zoom-input-group {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  background: var(--input-background);
+  padding: 0 2px;
+  height: 20px;
+  box-sizing: border-box;
+  gap: 0;
+}
+
+#zoomLevelResponsiveText {
+  text-align: center;
+  border: none;
+  background: transparent;
+  
+  color: var(--input-foreground);
+  cursor: default;
+}
+
+.responsive-zoom-button {
+  min-width: var(--responsive-zoom-button-size);
+  width: var(--responsive-zoom-button-size);
+  height: var(--responsive-zoom-button-size);
+  padding: 0;
+}
+.responsive-zoom-button svg {
+  width: var(--responsive-zoom-svg-size);
+  height: var(--responsive-zoom-svg-size);
 }
