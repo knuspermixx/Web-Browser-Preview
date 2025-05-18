@@ -4,10 +4,6 @@
   "description": "A web browser preview in a VSCode side panel using a Webview.",
   "version": "0.0.3",
   "publisher": "TimoCodes",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/knuspermixx/Web-Browser-Preview.git"
-  },
   "icon": "media/marketplace-icon.png",
   "engines": {
     "vscode": "^1.80.0"
